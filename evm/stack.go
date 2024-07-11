@@ -15,8 +15,8 @@ type Stack struct {
 	items []uint256.Int // underlying data
 }
 
-// New initializes and returns a new stack instance
-func New() *Stack {
+// NewStack initializes and returns a new stack instance
+func NewStack() *Stack {
 	return &Stack{
 		items: make([]uint256.Int, 0, MaxStackSize),
 	}
