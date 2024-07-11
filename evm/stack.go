@@ -15,8 +15,8 @@ type Stack struct {
 	items []uint256.Int // underlying data
 }
 
-// New initializes and returns a new stack instance
-func New() *Stack {
+// NewStack initializes and returns a new stack instance
+func NewStack() *Stack {
 	return &Stack{
 		items: make([]uint256.Int, 0, MaxStackSize),
 	}
@@ -38,4 +38,9 @@ func (s *Stack) Pop() uint256.Int {
 	value := s.items[len(s.items)-1]
 	s.items = s.items[:len(s.items)-1]
 	return value
+}
+
+// Peer returns the top item from the stack
+func (s *Stack) Peek() uint256.Int {
+	return s.items[len(s.items)-1]
 }
