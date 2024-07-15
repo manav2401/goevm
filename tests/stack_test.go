@@ -17,7 +17,7 @@ func TestStack(t *testing.T) {
 	if top.Cmp(two) != 0 {
 		t.Fatalf("Invalid peer, expected: %v and got: %v", two.Uint64(), top.Uint64())
 	}
-	top = stack.Pop()
+	*top = stack.Pop()
 	if top.Cmp(two) != 0 {
 		t.Fatalf("Invalid pop, expected: %v and got: %v", two.Uint64(), top.Uint64())
 	}
@@ -25,7 +25,7 @@ func TestStack(t *testing.T) {
 	if top.Cmp(one) != 0 {
 		t.Fatalf("Invalid peek, expected: %v and got: %v", one.Uint64(), top.Uint64())
 	}
-	top = stack.Pop()
+	*top = stack.Pop()
 	if top.Cmp(one) != 0 {
 		t.Fatalf("Invalid pop, expected: %v and got: %v", one.Uint64(), top.Uint64())
 	}

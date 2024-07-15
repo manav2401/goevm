@@ -41,6 +41,6 @@ func (s *Stack) Pop() uint256.Int {
 }
 
 // Peer returns the top item from the stack
-func (s *Stack) Peek() uint256.Int {
-	return s.items[len(s.items)-1]
+func (s *Stack) Peek() *uint256.Int {
+	return &s.items[len(s.items)-1]
 }
