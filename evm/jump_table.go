@@ -2,9 +2,11 @@ package evm
 
 type JumpTable map[OpCode]OpCodeOperation
 
+type executeFn func(*EVM) ([]byte, error)
+
 type OpCodeOperation struct {
 	gas     uint64
-	execute func(*EVM) ([]byte, error)
+	execute executeFn
 }
 
 func newInstructionSet() JumpTable {
@@ -49,6 +51,13 @@ func newInstructionSet() JumpTable {
 	table[CALLDATACOPY] = OpCodeOperation{0, opCalldataCopy}
 	table[CODESIZE] = OpCodeOperation{0, opCodesize}
 	table[CODECOPY] = OpCodeOperation{0, opCodeCopy}
+
+	table[POP] = OpCodeOperation{0, opPop}
+	table[PUSH0] = OpCodeOperation{0, makePush(0)}
+	for i := 0; i < 32; i++ {
+		op := PUSH1 + OpCode(i)
+		table[op] = OpCodeOperation{0, makePush(uint64(i + 1))}
+	}
 
 	return table
 }

@@ -90,6 +90,7 @@ var (
 	TSTORE OpCode = 0x5d
 
 	// Push
+	PUSH0  OpCode = 0x5f
 	PUSH1  OpCode = 0x60
 	PUSH2  OpCode = 0x61
 	PUSH3  OpCode = 0x62

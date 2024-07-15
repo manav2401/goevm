@@ -286,3 +286,29 @@ func opCodeCopy(evm *EVM) ([]byte, error) {
 	evm.scope.memory.Store(memOffset.Uint64(), length.Uint64(), codeCopy)
 	return nil, nil
 }
+
+func opPop(evm *EVM) ([]byte, error) {
+	evm.scope.stack.Pop()
+	return nil, nil
+}
+
+func makePush(size uint64) executeFn {
+	return func(evm *EVM) ([]byte, error) {
+		if size == 0 {
+			evm.scope.stack.Push(new(uint256.Int))
+			return nil, nil
+		}
+		start := evm.executionOpts.pc + 1
+		end := start + size
+		if int(end) > len(evm.executionOpts.code) {
+			panic("not enough bytes in code to push")
+		}
+		evm.scope.stack.Push(new(uint256.Int).SetBytes(
+			common.RightPadBytes(evm.executionOpts.code[start:end], int(size)),
+		))
+
+		// This will bring the pc to last byte (increment for next opcode won't happen here)
+		evm.executionOpts.pc += size
+		return nil, nil
+	}
+}
