@@ -6,12 +6,13 @@ type Memory struct {
 
 // NewMemory simply initializes a new memory instance
 func NewMemory() *Memory {
-	return &Memory{}
+	return &Memory{make([]byte, 0)}
 }
 
-// InitWithSize initializes the underlying byte array with given `size`
-func (m *Memory) InitWithSize(size uint64) {
-	m.data = make([]byte, size)
+func (m *Memory) Resize(size uint64) {
+	if uint64(m.Len()) < size {
+		m.data = append(m.data, make([]byte, size-uint64(m.Len()))...)
+	}
 }
 
 // Store sets the data in underlying array. It assumes that the array is already initialized.

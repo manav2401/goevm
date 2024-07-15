@@ -7,7 +7,7 @@ import (
 
 func TestMemory(t *testing.T) {
 	memory := evm.NewMemory()
-	memory.InitWithSize(10)
+	memory.Resize(10)
 	data := "hello"
 	memory.Store(0, 5, []byte(data))
 	data = "world"
