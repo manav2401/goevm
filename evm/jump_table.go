@@ -65,5 +65,10 @@ func newInstructionSet() JumpTable {
 	table[SLOAD] = OpCodeOperation{0, opSload}
 	table[SSTORE] = OpCodeOperation{0, opSStore}
 
+	table[JUMP] = OpCodeOperation{0, opJump}
+	table[JUMPI] = OpCodeOperation{0, opJumpi}
+	table[PC] = OpCodeOperation{0, opPc}
+	table[JUMPDEST] = OpCodeOperation{0, opJumpdest}
+
 	return table
 }

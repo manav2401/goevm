@@ -349,3 +349,38 @@ func opSStore(evm *EVM) ([]byte, error) {
 	// TODO: implement me
 	return nil, nil
 }
+
+func opJump(evm *EVM) ([]byte, error) {
+	newPc := evm.scope.stack.Pop()
+	if int(newPc.Uint64()) >= len(evm.executionOpts.code) {
+		panic("invalid jump: out of index")
+	}
+	if evm.executionOpts.code[newPc.Uint64()] != byte(JUMPDEST) {
+		panic("invalid jump: no jumpdest")
+	}
+	evm.executionOpts.pc += newPc.Uint64() - 1
+	return nil, nil
+}
+
+func opJumpi(evm *EVM) ([]byte, error) {
+	newPc, condition := evm.scope.stack.Pop(), evm.scope.stack.Pop()
+	if !condition.IsZero() {
+		if int(newPc.Uint64()) >= len(evm.executionOpts.code) {
+			panic("invalid jump: out of index")
+		}
+		if evm.executionOpts.code[newPc.Uint64()] != byte(JUMPDEST) {
+			panic("invalid jump: no jumpdest")
+		}
+		evm.executionOpts.pc += newPc.Uint64() - 1
+	}
+	return nil, nil
+}
+
+func opPc(evm *EVM) ([]byte, error) {
+	evm.scope.stack.Push(uint256.NewInt(evm.executionOpts.pc))
+	return nil, nil
+}
+
+func opJumpdest(evm *EVM) ([]byte, error) {
+	return nil, nil
+}
