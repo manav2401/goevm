@@ -341,11 +341,11 @@ func opMstore8(evm *EVM) ([]byte, error) {
 }
 
 func opSload(evm *EVM) ([]byte, error) {
-	evm.scope.stack.Pop()
+	// TODO: implement me
 	return nil, nil
 }
 
 func opSStore(evm *EVM) ([]byte, error) {
-	evm.scope.stack.Pop()
+	// TODO: implement me
 	return nil, nil
 }
