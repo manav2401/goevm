@@ -33,7 +33,7 @@ func newInstructionSet() JumpTable {
 	table[EQ] = OpCodeOperation{0, opEq}
 	table[ISZERO] = OpCodeOperation{0, opIsZero}
 
-	table[AND] = OpCodeOperation{0, opAdd}
+	table[AND] = OpCodeOperation{0, opAnd}
 	table[OR] = OpCodeOperation{0, opOr}
 	table[XOR] = OpCodeOperation{0, opXor}
 	table[NOT] = OpCodeOperation{0, opNot}
