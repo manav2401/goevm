@@ -22,6 +22,16 @@ func (m *Memory) Store(offset, size uint64, data []byte) {
 
 // Load returns the data in a specific index range
 func (m *Memory) Load(offset, size uint64) []byte {
+	if size == 0 || offset >= m.Len() {
+		data := make([]byte, size)
+		return data
+	}
+
+	if offset+size > m.Len() {
+		data := make([]byte, size)
+		copy(data, m.data[offset:])
+	}
+
 	return m.data[offset : offset+size]
 }
 

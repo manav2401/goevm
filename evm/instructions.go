@@ -312,3 +312,40 @@ func makePush(size uint64) executeFn {
 		return nil, nil
 	}
 }
+
+func opMload(evm *EVM) ([]byte, error) {
+	value := evm.scope.stack.Peek()
+	offset := value.Uint64()
+	value.SetBytes(evm.scope.memory.Load(offset, 32))
+	return nil, nil
+}
+
+func opMstore(evm *EVM) ([]byte, error) {
+	offset, value := evm.scope.stack.Pop(), evm.scope.stack.Pop()
+	valueB32 := value.Bytes32()
+
+	// TODO: think a better way/place to resize
+	evm.scope.memory.Resize(evm.scope.memory.Len() + 32)
+	evm.scope.memory.Store(offset.Uint64(), 32, valueB32[:])
+	return nil, nil
+}
+
+func opMstore8(evm *EVM) ([]byte, error) {
+	offset, value := evm.scope.stack.Pop(), evm.scope.stack.Pop()
+	v := []byte{byte(value.Uint64())}
+
+	// TODO: think a better way/place to resize
+	evm.scope.memory.Resize(evm.scope.memory.Len() + 1)
+	evm.scope.memory.Store(offset.Uint64(), 1, v)
+	return nil, nil
+}
+
+func opSload(evm *EVM) ([]byte, error) {
+	evm.scope.stack.Pop()
+	return nil, nil
+}
+
+func opSStore(evm *EVM) ([]byte, error) {
+	evm.scope.stack.Pop()
+	return nil, nil
+}
