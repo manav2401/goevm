@@ -81,7 +81,8 @@ func (evm *EVM) Run() {
 			log.Error("Unknown opcode", "opcode", opcode)
 		}
 		evm.executionOpts.pc++
-		if evm.executionOpts.stopFlag {
+		if evm.executionOpts.stopFlag || evm.executionOpts.revertFlag {
+			log.Info("Stop or revert called", "return data", evm.executionOpts.returnData)
 			return
 		}
 		// decrease gas

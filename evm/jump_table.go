@@ -70,5 +70,18 @@ func newInstructionSet() JumpTable {
 	table[PC] = OpCodeOperation{0, opPc}
 	table[JUMPDEST] = OpCodeOperation{0, opJumpdest}
 
+	for i := 0; i < 16; i++ {
+		op := DUP1 + OpCode(i)
+		table[op] = OpCodeOperation{0, makeDup(i + 1)}
+	}
+
+	for i := 0; i < 16; i++ {
+		op := SWAP1 + OpCode(i)
+		table[op] = OpCodeOperation{0, makeSwap(i + 1)}
+	}
+
+	table[RETURN] = OpCodeOperation{0, opReturn}
+	table[REVERT] = OpCodeOperation{0, opRevert}
+
 	return table
 }

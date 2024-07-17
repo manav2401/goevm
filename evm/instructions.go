@@ -384,3 +384,35 @@ func opPc(evm *EVM) ([]byte, error) {
 func opJumpdest(evm *EVM) ([]byte, error) {
 	return nil, nil
 }
+
+func makeDup(size int) executeFn {
+	return func(evm *EVM) ([]byte, error) {
+		evm.scope.stack.Dup(size)
+		return nil, nil
+	}
+}
+
+func makeSwap(size int) executeFn {
+	return func(evm *EVM) ([]byte, error) {
+		evm.scope.stack.Swap(size + 1)
+		return nil, nil
+	}
+}
+
+func opReturn(evm *EVM) ([]byte, error) {
+	offset, size := evm.scope.stack.Pop(), evm.scope.stack.Pop()
+	returnData := evm.scope.memory.Load(offset.Uint64(), size.Uint64())
+
+	evm.executionOpts.returnData = returnData
+	evm.executionOpts.stopFlag = true
+	return nil, nil
+}
+
+func opRevert(evm *EVM) ([]byte, error) {
+	offset, size := evm.scope.stack.Pop(), evm.scope.stack.Pop()
+	returnData := evm.scope.memory.Load(offset.Uint64(), size.Uint64())
+
+	evm.executionOpts.returnData = returnData
+	evm.executionOpts.revertFlag = true
+	return nil, nil
+}
