@@ -1,17 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"goevm/evm"
+	"os"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 func main() {
-	fmt.Println("Hello world")
+	log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(os.Stderr, log.LevelInfo, true)))
+
 	// PUSH1 5, PUSH1 6, ADD, STOP
 	evm := evm.NewEVM(common.Address{}, 1, []byte{}, []byte{0x60, 0x5, 0x60, 0x6, 0x1, 0x0}, 10000)
-	fmt.Println("Initialised evm, starting to run")
+	log.Info("Initialized new evm instance, starting execution")
 	evm.Run()
-	fmt.Println("Done execution")
+	log.Info("Done execution")
 }

@@ -71,9 +71,11 @@ func NewEVM(sender common.Address, value uint64, calldata []byte, code []byte, g
 }
 
 func (evm *EVM) Run() {
+	log.Info("Strating execution in evm", "code", evm.executionOpts.code)
 	for {
 		opcode := evm.GetOp(evm.executionOpts.pc)
 		if op, ok := evm.table[opcode]; ok {
+			log.Info("Running", "opcode", opcode)
 			op.execute(evm)
 		} else {
 			log.Error("Unknown opcode", "opcode", opcode)
