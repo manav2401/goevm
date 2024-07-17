@@ -75,7 +75,7 @@ func (evm *EVM) Run() {
 	for {
 		opcode := evm.GetOp(evm.executionOpts.pc)
 		if op, ok := evm.table[opcode]; ok {
-			log.Info("Running", "opcode", opcode)
+			log.Info("Running", "opcode", opcode, "pc", evm.executionOpts.pc)
 			op.execute(evm)
 		} else {
 			log.Error("Unknown opcode", "opcode", opcode)

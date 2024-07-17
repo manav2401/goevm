@@ -44,6 +44,7 @@ func newInstructionSet() JumpTable {
 
 	table[ADDRESS] = OpCodeOperation{0, opAddress}
 	table[BALANCE] = OpCodeOperation{0, opBalance}
+	table[ORIGIN] = OpCodeOperation{0, opOrigin}
 	table[CALLER] = OpCodeOperation{0, opCaller}
 	table[CALLVALUE] = OpCodeOperation{0, opCallValue}
 	table[CALLDATALOAD] = OpCodeOperation{0, opCalldataLoad}
