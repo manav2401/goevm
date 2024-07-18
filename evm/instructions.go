@@ -348,7 +348,7 @@ func opMstore8(evm *EVM) ([]byte, error) {
 func opSload(evm *EVM) ([]byte, error) {
 	loc := evm.scope.stack.Peek()
 	hash := common.Hash(loc.Bytes32())
-	val := evm.scope.storage.GetState(evm.executionOpts.sender, hash)
+	val := evm.scope.storage.GetState(evm.executionOpts.contract, hash)
 	loc.SetBytes(val.Bytes())
 	return nil, nil
 }
