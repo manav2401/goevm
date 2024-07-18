@@ -39,7 +39,7 @@ func NewRemoteStorage(path string) *RemoteStorage {
 
 	// Get the latest head from db
 	latest := rawdb.ReadHeadHeader(db)
-	if latest != nil {
+	if latest == nil {
 		log.Error("Unable to query latest header from kv db")
 		db.Close()
 		return nil
