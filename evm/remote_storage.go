@@ -15,8 +15,10 @@ import (
 // EVM node (hash based scheme). It acts as an interafce to interact with
 // the underlying data (e.g. state and accounts) from the node.
 type RemoteStorage struct {
-	db   ethdb.Database // for raw kv interactions
-	trie state.Trie     // for state interactions
+	root    common.Hash    // latest head's root hash
+	db      ethdb.Database // for raw kv interactions
+	statedb state.Database // for accessing storage tries whenever required
+	trie    state.Trie     // for accessing main merkle trie
 }
 
 func NewRemoteStorage(path string) *RemoteStorage {
@@ -54,9 +56,13 @@ func NewRemoteStorage(path string) *RemoteStorage {
 		return nil
 	}
 
+	log.Info("Opened database using latest head", "number", latest.Number.Uint64(), "root", latest.Root, "hash", latest.Hash())
+
 	return &RemoteStorage{
-		db:   db,
-		trie: trie,
+		root:    latest.Root,
+		db:      db,
+		statedb: stateDb,
+		trie:    trie,
 	}
 }
 
@@ -87,15 +93,37 @@ func (s *RemoteStorage) GetNonce(address common.Address) *uint64 {
 func (s *RemoteStorage) SetState(common.Address, common.Hash) {}
 
 func (s *RemoteStorage) GetState(address common.Address, key common.Hash) common.Hash {
-	val, err := s.trie.GetStorage(address, key.Bytes())
+	storageTrie := openStorageTrie(address, s.root, s.trie, s.statedb)
+	if storageTrie == nil {
+		return types.EmptyRootHash
+	}
+
+	val, err := storageTrie.GetStorage(address, key.Bytes())
 	if err != nil {
-		log.Error("Error getting storage from db", "address", address, "key", key, "err", err)
+		log.Error("Error getting data from storage trie", "address", address, "key", key, "err", err)
 		return types.EmptyRootHash
 	}
 
 	var value common.Hash
 	value.SetBytes(val)
 	return value
+}
+
+func openStorageTrie(address common.Address, root common.Hash, globalTrie state.Trie, statedb state.Database) state.Trie {
+	account, err := globalTrie.GetAccount(address)
+	if err != nil {
+		log.Error("Error getting account from db", "address", address, "err", err)
+		return nil
+	}
+
+	// Open the storage trie for the given contract address
+	trie, err := statedb.OpenStorageTrie(root, address, account.Root, globalTrie)
+	if err != nil {
+		log.Error("Error opening storage trie", "address", address, "root", account.Root, "err", err)
+		return nil
+	}
+
+	return trie
 }
 
 func (s *RemoteStorage) Close() {
