@@ -4,6 +4,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/triedb"
@@ -59,6 +60,10 @@ func NewRemoteStorage(path string) *RemoteStorage {
 	}
 }
 
+func (s *RemoteStorage) CreateAccount(common.Address, types.StateAccount) {}
+
+func (s *RemoteStorage) SetBalance(common.Address, *uint256.Int) {}
+
 func (s *RemoteStorage) GetBalance(address common.Address) *uint256.Int {
 	account, err := s.trie.GetAccount(address)
 	if err != nil {
@@ -68,6 +73,8 @@ func (s *RemoteStorage) GetBalance(address common.Address) *uint256.Int {
 	return account.Balance
 }
 
+func (s *RemoteStorage) SetNonce(common.Address, uint64) {}
+
 func (s *RemoteStorage) GetNonce(address common.Address) *uint64 {
 	account, err := s.trie.GetAccount(address)
 	if err != nil {
@@ -75,6 +82,20 @@ func (s *RemoteStorage) GetNonce(address common.Address) *uint64 {
 		return nil
 	}
 	return &account.Nonce
+}
+
+func (s *RemoteStorage) SetState(common.Address, common.Hash) {}
+
+func (s *RemoteStorage) GetState(address common.Address, key common.Hash) common.Hash {
+	val, err := s.trie.GetStorage(address, key.Bytes())
+	if err != nil {
+		log.Error("Error getting storage from db", "address", address, "key", key, "err", err)
+		return types.EmptyRootHash
+	}
+
+	var value common.Hash
+	value.SetBytes(val)
+	return value
 }
 
 func (s *RemoteStorage) Close() {
