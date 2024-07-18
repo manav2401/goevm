@@ -89,7 +89,7 @@ func (s *RemoteStorage) GetNonce(address common.Address) *uint64 {
 	return &account.Nonce
 }
 
-func (s *RemoteStorage) SetState(common.Address, common.Hash) {}
+func (s *RemoteStorage) SetState(common.Address, common.Hash, common.Hash) {}
 
 func (s *RemoteStorage) GetState(address common.Address, key common.Hash) common.Hash {
 	storageTrie := openStorageTrie(address, s.root, s.trie, s.statedb)
