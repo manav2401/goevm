@@ -24,7 +24,6 @@ func (s *SimpleStorage) Load(key Key) (value Value) {
 	return s.data[key]
 }
 
-// TODO: implement this...
 func (s *SimpleStorage) GetBalance(address common.Address) *uint256.Int {
-	return nil
+	return uint256.NewInt(100)
 }

@@ -211,9 +211,8 @@ func opAddress(evm *EVM) ([]byte, error) {
 
 func opBalance(evm *EVM) ([]byte, error) {
 	slot := evm.scope.stack.Peek()
-	slot.Set(uint256.NewInt(1_000000000000000000))
-	// address := common.Address(slot.Bytes20())
-	// slot.Set(evm.scope.storage.GetBalance(address))
+	address := common.Address(slot.Bytes20())
+	slot.Set(evm.scope.storage.GetBalance(address))
 	return nil, nil
 }
 

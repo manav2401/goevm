@@ -64,6 +64,10 @@ func (s *RemoteStorage) Close() {
 }
 
 func (s *RemoteStorage) GetBalance(address common.Address) *uint256.Int {
-	// TODO
-	return nil
+	account, err := s.trie.GetAccount(address)
+	if err != nil {
+		log.Error("Error getting account from db", "address", address, "err", err)
+		return nil
+	}
+	return account.Balance
 }
