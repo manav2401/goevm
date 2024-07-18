@@ -46,7 +46,7 @@ func newScopeContext() ScopeContext {
 	}
 }
 
-func newExecutionOpts(contract common.Address, sender common.Address, value uint64, calldata []byte, code []byte, gas uint64) *ExecutionOpts {
+func NewExecutionOpts(contract common.Address, sender common.Address, value uint64, calldata []byte, code []byte, gas uint64) *ExecutionOpts {
 	return &ExecutionOpts{
 		pc:         0,
 		contract:   contract,
@@ -61,10 +61,9 @@ func newExecutionOpts(contract common.Address, sender common.Address, value uint
 	}
 }
 
-func NewEVM(contract common.Address, sender common.Address, value uint64, calldata []byte, code []byte, gas uint64) *EVM {
+func NewEVM(storage Storage, opts *ExecutionOpts) *EVM {
 	sc := newScopeContext()
 	table := newInstructionSet()
-	opts := newExecutionOpts(contract, sender, value, calldata, code, gas)
 	return &EVM{
 		sc,
 		table,
