@@ -37,12 +37,10 @@ type ExecutionOpts struct {
 func newScopeContext() ScopeContext {
 	stack := NewStack()
 	memory := NewMemory()
-	storage := NewSimpleStorage()
 
 	return ScopeContext{
-		stack,
-		memory,
-		storage,
+		stack:  stack,
+		memory: memory,
 	}
 }
 
@@ -63,6 +61,8 @@ func NewExecutionOpts(contract common.Address, sender common.Address, value uint
 
 func NewEVM(storage Storage, opts *ExecutionOpts) *EVM {
 	sc := newScopeContext()
+	sc.storage = storage
+
 	table := newInstructionSet()
 	return &EVM{
 		sc,
