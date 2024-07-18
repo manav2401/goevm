@@ -59,10 +59,6 @@ func NewRemoteStorage(path string) *RemoteStorage {
 	}
 }
 
-func (s *RemoteStorage) Close() {
-	s.db.Close()
-}
-
 func (s *RemoteStorage) GetBalance(address common.Address) *uint256.Int {
 	account, err := s.trie.GetAccount(address)
 	if err != nil {
@@ -70,4 +66,17 @@ func (s *RemoteStorage) GetBalance(address common.Address) *uint256.Int {
 		return nil
 	}
 	return account.Balance
+}
+
+func (s *RemoteStorage) GetNonce(address common.Address) *uint64 {
+	account, err := s.trie.GetAccount(address)
+	if err != nil {
+		log.Error("Error getting account from db", "address", address, "err", err)
+		return nil
+	}
+	return &account.Nonce
+}
+
+func (s *RemoteStorage) Close() {
+	s.db.Close()
 }

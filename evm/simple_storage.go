@@ -7,23 +7,32 @@ import (
 
 // SimpleStorage is an in-memory store with a simple map underneath
 type SimpleStorage struct {
-	data map[Key]Value
+	accounts map[common.Address]Account
+}
+
+type Account struct {
+	Nonce    uint64
+	Balance  *uint256.Int
+	Root     common.Hash
+	CodeHash []byte
 }
 
 func NewSimpleStorage() *SimpleStorage {
-	return &SimpleStorage{
-		data: make(map[Key]Value),
-	}
-}
-
-func (s *SimpleStorage) Store(key Key, value Value) {
-	s.data[key] = value
-}
-
-func (s *SimpleStorage) Load(key Key) (value Value) {
-	return s.data[key]
+	return &SimpleStorage{accounts: make(map[common.Address]Account)}
 }
 
 func (s *SimpleStorage) GetBalance(address common.Address) *uint256.Int {
-	return uint256.NewInt(100)
+	if account, ok := s.accounts[address]; ok {
+		return account.Balance
+	}
+
+	return nil
+}
+
+func (s *SimpleStorage) GetNonce(address common.Address) *uint64 {
+	if account, ok := s.accounts[address]; ok {
+		return &account.Nonce
+	}
+
+	return nil
 }
