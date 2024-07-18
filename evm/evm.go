@@ -22,6 +22,7 @@ type ScopeContext struct {
 
 type ExecutionOpts struct {
 	pc         uint64
+	contract   common.Address
 	sender     common.Address
 	value      *uint256.Int
 	calldata   []byte
@@ -45,9 +46,10 @@ func newScopeContext() ScopeContext {
 	}
 }
 
-func newExecutionOpts(sender common.Address, value uint64, calldata []byte, code []byte, gas uint64) *ExecutionOpts {
+func newExecutionOpts(contract common.Address, sender common.Address, value uint64, calldata []byte, code []byte, gas uint64) *ExecutionOpts {
 	return &ExecutionOpts{
 		pc:         0,
+		contract:   contract,
 		sender:     sender,
 		value:      uint256.NewInt(value),
 		calldata:   calldata,
@@ -59,10 +61,10 @@ func newExecutionOpts(sender common.Address, value uint64, calldata []byte, code
 	}
 }
 
-func NewEVM(sender common.Address, value uint64, calldata []byte, code []byte, gas uint64) *EVM {
+func NewEVM(contract common.Address, sender common.Address, value uint64, calldata []byte, code []byte, gas uint64) *EVM {
 	sc := newScopeContext()
 	table := newInstructionSet()
-	opts := newExecutionOpts(sender, value, calldata, code, gas)
+	opts := newExecutionOpts(contract, sender, value, calldata, code, gas)
 	return &EVM{
 		sc,
 		table,
