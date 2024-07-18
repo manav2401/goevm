@@ -2,13 +2,12 @@ package evm
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/holiman/uint256"
 )
 
 // Storage defines base methods that any store needs to implement
 type Storage interface {
-	CreateAccount(common.Address, types.StateAccount)
+	CreateAccount(common.Address)
 
 	SetBalance(common.Address, *uint256.Int)
 	GetBalance(common.Address) *uint256.Int

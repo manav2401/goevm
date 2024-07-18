@@ -19,8 +19,14 @@ func NewSimpleStorage() *SimpleStorage {
 	}
 }
 
-func (s *SimpleStorage) CreateAccount(address common.Address, account types.StateAccount) {
+func (s *SimpleStorage) CreateAccount(address common.Address) {
 	if _, ok := s.accounts[address]; !ok {
+		account := types.StateAccount{
+			Nonce:    0,
+			Balance:  uint256.NewInt(0),
+			Root:     types.EmptyRootHash,
+			CodeHash: []byte{},
+		}
 		s.accounts[address] = account
 	}
 }
@@ -28,6 +34,7 @@ func (s *SimpleStorage) CreateAccount(address common.Address, account types.Stat
 func (s *SimpleStorage) SetBalance(address common.Address, balance *uint256.Int) {
 	if account, ok := s.accounts[address]; ok {
 		account.Balance = balance
+		s.accounts[address] = account
 	}
 }
 
@@ -42,6 +49,7 @@ func (s *SimpleStorage) GetBalance(address common.Address) *uint256.Int {
 func (s *SimpleStorage) SetNonce(address common.Address, nonce uint64) {
 	if account, ok := s.accounts[address]; ok {
 		account.Nonce = nonce
+		s.accounts[address] = account
 	}
 }
 
@@ -68,7 +76,7 @@ func (s *SimpleStorage) GetState(address common.Address, key common.Hash) common
 		}
 	}
 
-	return types.EmptyRootHash
+	return common.Hash{}
 }
 
 func (s *SimpleStorage) Close() {}

@@ -4,7 +4,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/triedb"
@@ -66,7 +65,7 @@ func NewRemoteStorage(path string) *RemoteStorage {
 	}
 }
 
-func (s *RemoteStorage) CreateAccount(common.Address, types.StateAccount) {}
+func (s *RemoteStorage) CreateAccount(common.Address) {}
 
 func (s *RemoteStorage) SetBalance(common.Address, *uint256.Int) {}
 
@@ -95,13 +94,13 @@ func (s *RemoteStorage) SetState(common.Address, common.Hash) {}
 func (s *RemoteStorage) GetState(address common.Address, key common.Hash) common.Hash {
 	storageTrie := openStorageTrie(address, s.root, s.trie, s.statedb)
 	if storageTrie == nil {
-		return types.EmptyRootHash
+		return common.Hash{}
 	}
 
 	val, err := storageTrie.GetStorage(address, key.Bytes())
 	if err != nil {
 		log.Error("Error getting data from storage trie", "address", address, "key", key, "err", err)
-		return types.EmptyRootHash
+		return common.Hash{}
 	}
 
 	var value common.Hash
