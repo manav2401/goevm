@@ -1,6 +1,10 @@
 package evm
 
-import "github.com/ethereum/go-ethereum/log"
+import (
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/log"
+)
 
 type Memory struct {
 	data []byte
@@ -42,16 +46,16 @@ func (m *Memory) Len() uint64 {
 	return uint64(len(m.data))
 }
 
-func (m *Memory) Print(prevSize uint64) {
+func (m *Memory) Print(prefix string, prevSize uint64) {
 	if m.Len() == 0 {
-		log.Info("Empty memory")
+		log.Info(fmt.Sprintf("%s: empty memory", prefix))
 		return
 	}
 
 	if m.Len() != prevSize {
-		log.Info("Memory expanded", "len", m.Len(), "data", m.data)
+		log.Info(fmt.Sprintf("%s: memory expanded", prefix), "len", m.Len(), "data", m.data)
 		return
 	}
 
-	log.Info("Memory", "len", m.Len(), "data", m.data)
+	log.Info(fmt.Sprint(prefix), "len", m.Len(), "data", m.data)
 }

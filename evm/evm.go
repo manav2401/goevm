@@ -12,6 +12,7 @@ type EVM struct {
 	scope         ScopeContext
 	table         JumpTable
 	executionOpts *ExecutionOpts
+	tracer        *Tracer
 }
 
 type ScopeContext struct {
@@ -59,7 +60,7 @@ func NewExecutionOpts(contract common.Address, sender common.Address, value uint
 	}
 }
 
-func NewEVM(storage Storage, opts *ExecutionOpts) *EVM {
+func NewEVM(storage Storage, opts *ExecutionOpts, tracer *Tracer) *EVM {
 	sc := newScopeContext()
 	sc.storage = storage
 
@@ -68,6 +69,7 @@ func NewEVM(storage Storage, opts *ExecutionOpts) *EVM {
 		sc,
 		table,
 		opts,
+		tracer,
 	}
 }
 
@@ -76,8 +78,16 @@ func (evm *EVM) Run() {
 	for {
 		opcode := evm.GetOp(evm.executionOpts.pc)
 		if op, ok := evm.table[opcode]; ok {
-			log.Info("Running", "opcode", opcode, "pc", evm.executionOpts.pc)
+			if evm.tracer != nil {
+				evm.tracer.CaptureOpCodeStart(evm.scope, opcode)
+			}
+
+			// Call the execute function of the opcode
 			op.execute(evm)
+
+			if evm.tracer != nil {
+				evm.tracer.CaptureOpCodeEnd(evm.scope)
+			}
 		} else {
 			log.Error("Unknown opcode", "opcode", opcode)
 		}

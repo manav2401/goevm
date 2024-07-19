@@ -1,6 +1,8 @@
 package evm
 
 import (
+	"fmt"
+
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/holiman/uint256"
 )
@@ -49,9 +51,9 @@ func (s *Stack) Swap(n int) {
 	s.items[s.len()-n], s.items[s.len()-1] = s.items[s.len()-1], s.items[s.len()-n]
 }
 
-func (s *Stack) Print() {
+func (s *Stack) Print(prefix string) {
 	if s.len() == 0 {
-		log.Info("Empty stack")
+		log.Info(fmt.Sprintf("%s: empty stack", prefix))
 		return
 	}
 
@@ -65,5 +67,5 @@ func (s *Stack) Print() {
 	}
 	str += "]"
 
-	log.Info("Stack", "len", s.len(), "items", str)
+	log.Info(fmt.Sprint(prefix), "len", s.len(), "items", str)
 }
