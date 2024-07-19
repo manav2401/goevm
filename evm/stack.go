@@ -1,6 +1,7 @@
 package evm
 
 import (
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/holiman/uint256"
 )
 
@@ -46,4 +47,23 @@ func (s *Stack) Dup(n int) {
 
 func (s *Stack) Swap(n int) {
 	s.items[s.len()-n], s.items[s.len()-1] = s.items[s.len()-1], s.items[s.len()-n]
+}
+
+func (s *Stack) Print() {
+	if s.len() == 0 {
+		log.Info("Empty stack")
+		return
+	}
+
+	str := "["
+	for i := 0; i < s.len(); i++ {
+		if i != s.len()-1 {
+			str += s.items[i].Hex() + ", "
+		} else {
+			str += s.items[i].Hex()
+		}
+	}
+	str += "]"
+
+	log.Info("Stack", "len", s.len(), "items", str)
 }
