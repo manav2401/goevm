@@ -75,6 +75,11 @@ func NewEVM(storage Storage, opts *ExecutionOpts, tracer *Tracer) *EVM {
 
 func (evm *EVM) Run() {
 	log.Info("Strating execution in evm", "code", evm.executionOpts.code)
+	if evm.tracer != nil {
+		evm.tracer.CaptureTxStart(evm.executionOpts)
+		defer evm.tracer.CaptureTxEnd()
+	}
+
 	for {
 		opcode := evm.GetOp(evm.executionOpts.pc)
 		if op, ok := evm.table[opcode]; ok {
