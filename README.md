@@ -7,6 +7,20 @@ A simulation of EVM (Ethereum Virtual Machine) in go.
 
 The implementation contains the fundamental modules needed for the EVM i.e. stack, memory and storage. As of now, it only contains bunch of isolated opcodes (e.g. arithmetic operations) and opcodes interacting with memory and underlying storage/state. The whole list of opcodes supported can be found [here](./evm/jump_table.go)
 
+### Running the simulation
+
+Use the command below to run the simulation
+
+1. To run simple simulation using the in-memory storage
+```
+go run main.go simulate --storage "simple"
+```
+
+2. To run the simulation using geth based remote storage
+```
+go run main.go simulate --storage "remote" --datadir "<path to chaindata>" --contract-address "<contract address to interact with>"
+```
+
 ### Storage
 
 The [storage interface](./evm/storage.go) defines some generic methods which any storage should implement. There are 2 storage designs supported.
@@ -23,3 +37,8 @@ The implementation contains a very simple tracer which logs the following things
 - Storage changes
     - Tracks all the reads for the remote storage
     - Track the state-diffs for the in-memory storage (i.e. pre and post execution values)
+
+### References
+
+- https://evm-from-scratch.xyz
+- https://www.evm.codes
