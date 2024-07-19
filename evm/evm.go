@@ -6,7 +6,7 @@ import (
 	"github.com/holiman/uint256"
 )
 
-type Address [20]byte
+const IntrinsicGasCost = 21000
 
 type EVM struct {
 	scope         ScopeContext
@@ -74,24 +74,43 @@ func NewEVM(storage Storage, opts *ExecutionOpts, tracer *Tracer) *EVM {
 }
 
 func (evm *EVM) Run() {
-	log.Info("Strating execution in evm", "code", evm.executionOpts.code)
+	log.Info("Starting execution in evm")
 	if evm.tracer != nil {
 		evm.tracer.CaptureTxStart(evm.executionOpts)
-		defer evm.tracer.CaptureTxEnd()
+		defer evm.tracer.CaptureTxEnd(evm.executionOpts)
 	}
+
+	// Check for the intrinsic gas cost and deduct it
+	if evm.executionOpts.gas < IntrinsicGasCost {
+		log.Error("Insufficient gas to run the code", "gas", evm.executionOpts.gas)
+		return
+	}
+	evm.executionOpts.gas -= IntrinsicGasCost
 
 	for {
 		opcode := evm.GetOp(evm.executionOpts.pc)
 		if op, ok := evm.table[opcode]; ok {
-			if evm.tracer != nil {
-				evm.tracer.CaptureOpCodeStart(evm.scope, opcode)
+			cost := op.gas
+			if evm.executionOpts.gas < cost {
+				log.Error("Insufficient gas to run the opcode", "opcode", opcode, "remaining", evm.executionOpts.gas, "required", cost)
+				return
 			}
+			if evm.tracer != nil {
+				evm.tracer.CaptureOpCodeStart(evm.scope, opcode, evm.executionOpts.gas)
+			}
+
+			// Capture memory length before executing the opcode
+			memLength := evm.scope.memory.Len()
 
 			// Call the execute function of the opcode
 			op.execute(evm)
 
+			// Calculate memory expansion cost (3 per byte)
+			memCost := (evm.scope.memory.Len() - memLength) * 3
+			evm.executionOpts.gas -= cost + memCost
+
 			if evm.tracer != nil {
-				evm.tracer.CaptureOpCodeEnd(evm.scope)
+				evm.tracer.CaptureOpCodeEnd(evm.scope, evm.executionOpts.gas)
 			}
 		} else {
 			log.Error("Unknown opcode", "opcode", opcode)

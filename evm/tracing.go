@@ -10,6 +10,7 @@ import (
 type Tracer struct {
 	stackTrace  StackTrace
 	memoryTrace MemoryTrace
+	gasCost     uint64
 	opcode      OpCode // current opcode
 
 	storageReadTrace  []interface{}
@@ -33,15 +34,17 @@ func NewTracer() *Tracer {
 
 func (t *Tracer) CaptureTxStart(opts *ExecutionOpts) {
 	log.Info("### Starting trace")
-	log.Info("Transaction details", "from", opts.sender, "contract", opts.contract, "value", opts.value.Uint64(), "gas", opts.gas)
+	log.Info("### Transaction details", "from", opts.sender, "contract", opts.contract, "value", opts.value.Uint64(), "gas", opts.gas)
 	fmt.Println("")
 }
 
-func (t *Tracer) CaptureTxEnd() {
+func (t *Tracer) CaptureTxEnd(opts *ExecutionOpts) {
+	log.Info("### Execution completed", "gas left", opts.gas)
 	log.Info("### Ending trace")
+	fmt.Println("")
 }
 
-func (t *Tracer) CaptureOpCodeStart(scope ScopeContext, opcode OpCode) {
+func (t *Tracer) CaptureOpCodeStart(scope ScopeContext, opcode OpCode, gasCost uint64) {
 	// Capture stack
 	stackTrace := StackTrace{
 		stack: &Stack{items: make([]uint256.Int, scope.stack.len())},
@@ -57,10 +60,11 @@ func (t *Tracer) CaptureOpCodeStart(scope ScopeContext, opcode OpCode) {
 	t.memoryTrace = memoryTrace
 
 	t.opcode = opcode
+	t.gasCost = gasCost
 }
 
-func (t *Tracer) CaptureOpCodeEnd(scope ScopeContext) {
-	log.Info("### Opcode Trace", "opcode", t.opcode)
+func (t *Tracer) CaptureOpCodeEnd(scope ScopeContext, gasLeft uint64) {
+	log.Info("### Opcode Trace", "opcode", t.opcode, "gas used", t.gasCost-gasLeft, "gas left", gasLeft)
 	t.stackTrace.stack.Print("### Stack before")
 	scope.stack.Print("### Stack after")
 

@@ -14,71 +14,71 @@ func newInstructionSet() JumpTable {
 
 	table[STOP] = OpCodeOperation{0, opStop}
 
-	table[ADD] = OpCodeOperation{0, opAdd}
-	table[MUL] = OpCodeOperation{0, opMul}
-	table[SUB] = OpCodeOperation{0, opSub}
-	table[DIV] = OpCodeOperation{0, opDiv}
-	table[SDIV] = OpCodeOperation{0, opSDiv}
-	table[MOD] = OpCodeOperation{0, opMod}
-	table[SMOD] = OpCodeOperation{0, opSMod}
-	table[ADDMOD] = OpCodeOperation{0, opAddMod}
-	table[MULMOD] = OpCodeOperation{0, opMulMod}
-	table[EXP] = OpCodeOperation{0, opExp}
-	table[SIGNEXTEND] = OpCodeOperation{0, opSignExtend}
+	table[ADD] = OpCodeOperation{3, opAdd}
+	table[MUL] = OpCodeOperation{5, opMul}
+	table[SUB] = OpCodeOperation{3, opSub}
+	table[DIV] = OpCodeOperation{5, opDiv}
+	table[SDIV] = OpCodeOperation{5, opSDiv}
+	table[MOD] = OpCodeOperation{5, opMod}
+	table[SMOD] = OpCodeOperation{5, opSMod}
+	table[ADDMOD] = OpCodeOperation{8, opAddMod}
+	table[MULMOD] = OpCodeOperation{8, opMulMod}
+	table[EXP] = OpCodeOperation{10, opExp}
+	table[SIGNEXTEND] = OpCodeOperation{5, opSignExtend}
 
-	table[LT] = OpCodeOperation{0, opLt}
-	table[GT] = OpCodeOperation{0, opGt}
-	table[SLT] = OpCodeOperation{0, opSlt}
-	table[SGT] = OpCodeOperation{0, opSgt}
-	table[EQ] = OpCodeOperation{0, opEq}
-	table[ISZERO] = OpCodeOperation{0, opIsZero}
+	table[LT] = OpCodeOperation{3, opLt}
+	table[GT] = OpCodeOperation{3, opGt}
+	table[SLT] = OpCodeOperation{3, opSlt}
+	table[SGT] = OpCodeOperation{3, opSgt}
+	table[EQ] = OpCodeOperation{3, opEq}
+	table[ISZERO] = OpCodeOperation{3, opIsZero}
 
-	table[AND] = OpCodeOperation{0, opAnd}
-	table[OR] = OpCodeOperation{0, opOr}
-	table[XOR] = OpCodeOperation{0, opXor}
-	table[NOT] = OpCodeOperation{0, opNot}
-	table[BYTE] = OpCodeOperation{0, opByte}
-	table[SHL] = OpCodeOperation{0, opShl}
-	table[SHR] = OpCodeOperation{0, opShr}
-	table[SAR] = OpCodeOperation{0, opSar}
+	table[AND] = OpCodeOperation{3, opAnd}
+	table[OR] = OpCodeOperation{3, opOr}
+	table[XOR] = OpCodeOperation{3, opXor}
+	table[NOT] = OpCodeOperation{3, opNot}
+	table[BYTE] = OpCodeOperation{3, opByte}
+	table[SHL] = OpCodeOperation{3, opShl}
+	table[SHR] = OpCodeOperation{3, opShr}
+	table[SAR] = OpCodeOperation{3, opSar}
 
-	table[ADDRESS] = OpCodeOperation{0, opAddress}
-	table[BALANCE] = OpCodeOperation{0, opBalance}
-	table[ORIGIN] = OpCodeOperation{0, opOrigin}
-	table[CALLER] = OpCodeOperation{0, opCaller}
-	table[CALLVALUE] = OpCodeOperation{0, opCallValue}
-	table[CALLDATALOAD] = OpCodeOperation{0, opCalldataLoad}
-	table[CALLDATASIZE] = OpCodeOperation{0, opCalldataSize}
-	table[CALLDATACOPY] = OpCodeOperation{0, opCalldataCopy}
-	table[CODESIZE] = OpCodeOperation{0, opCodesize}
-	table[CODECOPY] = OpCodeOperation{0, opCodeCopy}
+	table[ADDRESS] = OpCodeOperation{2, opAddress}
+	table[BALANCE] = OpCodeOperation{100, opBalance} // only warm considered
+	table[ORIGIN] = OpCodeOperation{2, opOrigin}
+	table[CALLER] = OpCodeOperation{2, opCaller}
+	table[CALLVALUE] = OpCodeOperation{2, opCallValue}
+	table[CALLDATALOAD] = OpCodeOperation{3, opCalldataLoad}
+	table[CALLDATASIZE] = OpCodeOperation{2, opCalldataSize}
+	table[CALLDATACOPY] = OpCodeOperation{3, opCalldataCopy} // only static considered
+	table[CODESIZE] = OpCodeOperation{2, opCodesize}
+	table[CODECOPY] = OpCodeOperation{3, opCodeCopy} // only static considered
 
-	table[POP] = OpCodeOperation{0, opPop}
-	table[PUSH0] = OpCodeOperation{0, makePush(0)}
+	table[POP] = OpCodeOperation{2, opPop}
+	table[PUSH0] = OpCodeOperation{2, makePush(0)}
 	for i := 0; i < 32; i++ {
 		op := PUSH1 + OpCode(i)
-		table[op] = OpCodeOperation{0, makePush(uint64(i + 1))}
+		table[op] = OpCodeOperation{3, makePush(uint64(i + 1))}
 	}
 
-	table[MLOAD] = OpCodeOperation{0, opMload}
-	table[MSTORE] = OpCodeOperation{0, opMstore}
-	table[MSTORE8] = OpCodeOperation{0, opMstore8}
-	table[SLOAD] = OpCodeOperation{0, opSload}
-	table[SSTORE] = OpCodeOperation{0, opSStore}
+	table[MLOAD] = OpCodeOperation{3, opMload}     // only static considered
+	table[MSTORE] = OpCodeOperation{3, opMstore}   // only static considered
+	table[MSTORE8] = OpCodeOperation{3, opMstore8} // only static considered
+	table[SLOAD] = OpCodeOperation{100, opSload}   // only warm considered
+	table[SSTORE] = OpCodeOperation{100, opSStore} // only warm considered
 
-	table[JUMP] = OpCodeOperation{0, opJump}
-	table[JUMPI] = OpCodeOperation{0, opJumpi}
-	table[PC] = OpCodeOperation{0, opPc}
-	table[JUMPDEST] = OpCodeOperation{0, opJumpdest}
+	table[JUMP] = OpCodeOperation{8, opJump}
+	table[JUMPI] = OpCodeOperation{10, opJumpi}
+	table[PC] = OpCodeOperation{2, opPc}
+	table[JUMPDEST] = OpCodeOperation{1, opJumpdest}
 
 	for i := 0; i < 16; i++ {
 		op := DUP1 + OpCode(i)
-		table[op] = OpCodeOperation{0, makeDup(i + 1)}
+		table[op] = OpCodeOperation{3, makeDup(i + 1)}
 	}
 
 	for i := 0; i < 16; i++ {
 		op := SWAP1 + OpCode(i)
-		table[op] = OpCodeOperation{0, makeSwap(i + 1)}
+		table[op] = OpCodeOperation{3, makeSwap(i + 1)}
 	}
 
 	table[RETURN] = OpCodeOperation{0, opReturn}

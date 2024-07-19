@@ -65,7 +65,7 @@ func RunSimpleSimulation() {
 	code := *(*[]byte)(unsafe.Pointer(&opcodes))
 
 	// Initialise EVM instance
-	opts := evm.NewExecutionOpts(common.Address{}, sender, 1, []byte{}, code, 10000)
+	opts := evm.NewExecutionOpts(common.Address{}, sender, 1, []byte{}, code, 42000)
 	evm := evm.NewEVM(storage, opts, tracer)
 
 	log.Info("Initialized new evm instance, starting simple simulation", "len", len(code))
@@ -126,7 +126,7 @@ func RunRemoteSimulation(path string, contractAddress string) {
 
 	// Initialise EVM instance
 	code := *(*[]byte)(unsafe.Pointer(&opcodes))
-	opts := evm.NewExecutionOpts(contract, sender, 1, []byte{}, code, 10000)
+	opts := evm.NewExecutionOpts(contract, sender, 1, []byte{}, code, 42000)
 	evm := evm.NewEVM(storage, opts, tracer)
 
 	log.Info("Initialized new evm instance, starting remote simulation", "len", len(code))
