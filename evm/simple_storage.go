@@ -58,7 +58,11 @@ func (s *SimpleStorage) GetBalance(address common.Address) *uint256.Int {
 	}
 
 	if s.tracer != nil {
-		s.tracer.CaptureStorageReads("entity", "balance", "address", address, "balance", balance.Uint64())
+		var value uint64 = 0
+		if balance != nil {
+			value = balance.Uint64()
+		}
+		s.tracer.CaptureStorageReads("entity", "balance", "address", address, "balance", value)
 	}
 
 	return balance

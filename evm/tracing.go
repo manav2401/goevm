@@ -12,9 +12,8 @@ type Tracer struct {
 	memoryTrace MemoryTrace
 	opcode      OpCode // current opcode
 
-	accountCreationTrace []interface{}
-	storageReadTrace     []interface{}
-	storageWriteTrace    []interface{}
+	storageReadTrace  []interface{}
+	storageWriteTrace []interface{}
 }
 
 type StackTrace struct {
@@ -27,15 +26,15 @@ type MemoryTrace struct {
 
 func NewTracer() *Tracer {
 	return &Tracer{
-		accountCreationTrace: make([]interface{}, 0),
-		storageReadTrace:     make([]interface{}, 0),
-		storageWriteTrace:    make([]interface{}, 0),
+		storageReadTrace:  make([]interface{}, 0),
+		storageWriteTrace: make([]interface{}, 0),
 	}
 }
 
 func (t *Tracer) CaptureTxStart(opts *ExecutionOpts) {
 	log.Info("### Starting trace")
 	log.Info("Transaction details", "from", opts.sender, "contract", opts.contract, "value", opts.value.Uint64(), "gas", opts.gas)
+	fmt.Println("")
 }
 
 func (t *Tracer) CaptureTxEnd() {
@@ -69,10 +68,6 @@ func (t *Tracer) CaptureOpCodeEnd(scope ScopeContext) {
 	t.memoryTrace.memory.Print("### Memory before", length)
 	scope.memory.Print("### Memory after", length)
 
-	if len(t.accountCreationTrace) > 0 {
-		log.Info("***** Account created", t.accountCreationTrace...)
-		t.accountCreationTrace = make([]interface{}, 0)
-	}
 	if len(t.storageReadTrace) > 0 {
 		log.Info("***** Storage read", t.storageReadTrace...)
 		t.storageReadTrace = make([]interface{}, 0)
@@ -86,7 +81,8 @@ func (t *Tracer) CaptureOpCodeEnd(scope ScopeContext) {
 }
 
 func (t *Tracer) CaptureAccountCreation(ctx ...interface{}) {
-	t.accountCreationTrace = ctx
+	log.Info("***** Account created", ctx...)
+	fmt.Println("")
 }
 
 func (t *Tracer) CaptureStorageReads(ctx ...interface{}) {
