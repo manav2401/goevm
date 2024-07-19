@@ -65,6 +65,10 @@ func NewRemoteStorage(path string) *RemoteStorage {
 	}
 }
 
+func (s *RemoteStorage) IsWriteAllowed() bool {
+	return false
+}
+
 func (s *RemoteStorage) CreateAccount(common.Address) {}
 
 func (s *RemoteStorage) SetBalance(common.Address, *uint256.Int) {}

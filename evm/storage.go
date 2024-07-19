@@ -7,6 +7,8 @@ import (
 
 // Storage defines base methods that any store needs to implement
 type Storage interface {
+	IsWriteAllowed() bool
+
 	CreateAccount(common.Address)
 
 	SetBalance(common.Address, *uint256.Int)

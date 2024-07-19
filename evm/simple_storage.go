@@ -19,6 +19,10 @@ func NewSimpleStorage() *SimpleStorage {
 	}
 }
 
+func (s *SimpleStorage) IsWriteAllowed() bool {
+	return true
+}
+
 func (s *SimpleStorage) CreateAccount(address common.Address) {
 	if _, ok := s.accounts[address]; !ok {
 		account := types.StateAccount{
