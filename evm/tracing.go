@@ -53,7 +53,6 @@ func (t *Tracer) CaptureOpCodeStart(scope ScopeContext, opcode OpCode) {
 }
 
 func (t *Tracer) CaptureOpCodeEnd(scope ScopeContext) {
-	fmt.Println("")
 	log.Info("### Opcode Trace", "opcode", t.opcode)
 	t.stackTrace.stack.Print("### Stack before")
 	scope.stack.Print("### Stack after")
@@ -64,8 +63,14 @@ func (t *Tracer) CaptureOpCodeEnd(scope ScopeContext) {
 	fmt.Println("")
 }
 
-func (t *Tracer) CaptureStorageReads() {
+func (t *Tracer) CaptureAccountCreation(ctx ...interface{}) {
+	log.Info("### Account created", ctx...)
 }
 
-func (t *Tracer) CaptureStorageWrites() {
+func (t *Tracer) CaptureStorageReads(prefix string, ctx ...interface{}) {
+	log.Info(fmt.Sprintf("### Storage read: %s", prefix), ctx...)
+}
+
+func (t *Tracer) CaptureStorageWrites(prefix string, ctx ...interface{}) {
+	log.Info(fmt.Sprintf("### Storage write: %s", prefix), ctx...)
 }

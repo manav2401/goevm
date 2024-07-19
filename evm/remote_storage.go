@@ -18,9 +18,11 @@ type RemoteStorage struct {
 	db      ethdb.Database // for raw kv interactions
 	statedb state.Database // for accessing storage tries whenever required
 	trie    state.Trie     // for accessing main merkle trie
+
+	tracer *Tracer
 }
 
-func NewRemoteStorage(path string) *RemoteStorage {
+func NewRemoteStorage(path string, tracer *Tracer) *RemoteStorage {
 	// Open the key value db given the path. We're assuming that it's using leveldb
 	db, err := rawdb.NewLevelDBDatabase(path, 1024, 2000, "", true)
 	if err != nil {
@@ -62,6 +64,7 @@ func NewRemoteStorage(path string) *RemoteStorage {
 		db:      db,
 		statedb: stateDb,
 		trie:    trie,
+		tracer:  tracer,
 	}
 }
 
@@ -79,6 +82,9 @@ func (s *RemoteStorage) GetBalance(address common.Address) *uint256.Int {
 		log.Error("Error getting account from db", "address", address, "err", err)
 		return nil
 	}
+	if s.tracer != nil {
+		s.tracer.CaptureStorageReads("balance", "address", address, "balance", account.Balance.Uint64())
+	}
 	return account.Balance
 }
 
@@ -89,6 +95,9 @@ func (s *RemoteStorage) GetNonce(address common.Address) *uint64 {
 	if err != nil {
 		log.Error("Error getting account from db", "address", address, "err", err)
 		return nil
+	}
+	if s.tracer != nil {
+		s.tracer.CaptureStorageReads("nonce", "address", address, "nonce", account.Nonce)
 	}
 	return &account.Nonce
 }
@@ -109,6 +118,9 @@ func (s *RemoteStorage) GetState(address common.Address, key common.Hash) common
 
 	var value common.Hash
 	value.SetBytes(val)
+	if s.tracer != nil {
+		s.tracer.CaptureStorageReads("state", "address", address, "key", key, "value", value)
+	}
 	return value
 }
 
