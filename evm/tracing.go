@@ -70,15 +70,15 @@ func (t *Tracer) CaptureOpCodeEnd(scope ScopeContext) {
 	scope.memory.Print("### Memory after", length)
 
 	if len(t.accountCreationTrace) > 0 {
-		log.Info("### Account created", t.accountCreationTrace...)
+		log.Info("***** Account created", t.accountCreationTrace...)
 		t.accountCreationTrace = make([]interface{}, 0)
 	}
 	if len(t.storageReadTrace) > 0 {
-		log.Info("### Storage read", t.storageReadTrace...)
+		log.Info("***** Storage read", t.storageReadTrace...)
 		t.storageReadTrace = make([]interface{}, 0)
 	}
 	if len(t.storageWriteTrace) > 0 {
-		log.Info("### Storage write", t.storageWriteTrace...)
+		log.Info("***** Storage write", t.storageWriteTrace...)
 		t.storageWriteTrace = make([]interface{}, 0)
 	}
 
