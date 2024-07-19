@@ -44,7 +44,7 @@ func (s *SimpleStorage) CreateAccount(address common.Address) {
 func (s *SimpleStorage) SetBalance(address common.Address, balance *uint256.Int) {
 	if account, ok := s.accounts[address]; ok {
 		if s.tracer != nil {
-			s.tracer.CaptureStorageWrites("balance", "address", address, "old", account.Balance.Uint64(), "new", balance.Uint64())
+			s.tracer.CaptureStorageWrites("entity", "balance", "address", address, "old", account.Balance.Uint64(), "new", balance.Uint64())
 		}
 		account.Balance = balance
 		s.accounts[address] = account
@@ -52,20 +52,22 @@ func (s *SimpleStorage) SetBalance(address common.Address, balance *uint256.Int)
 }
 
 func (s *SimpleStorage) GetBalance(address common.Address) *uint256.Int {
+	var balance *uint256.Int
 	if account, ok := s.accounts[address]; ok {
-		if s.tracer != nil {
-			s.tracer.CaptureStorageReads("balance", "address", address, "balance", account.Balance.Uint64())
-		}
-		return account.Balance
+		balance = account.Balance
 	}
 
-	return nil
+	if s.tracer != nil {
+		s.tracer.CaptureStorageReads("entity", "balance", "address", address, "balance", balance.Uint64())
+	}
+
+	return balance
 }
 
 func (s *SimpleStorage) SetNonce(address common.Address, nonce uint64) {
 	if account, ok := s.accounts[address]; ok {
 		if s.tracer != nil {
-			s.tracer.CaptureStorageWrites("nonce", "address", address, "old", account.Nonce, "new", nonce)
+			s.tracer.CaptureStorageWrites("entity", "nonce", "address", address, "old", account.Nonce, "new", nonce)
 		}
 		account.Nonce = nonce
 		s.accounts[address] = account
@@ -73,14 +75,16 @@ func (s *SimpleStorage) SetNonce(address common.Address, nonce uint64) {
 }
 
 func (s *SimpleStorage) GetNonce(address common.Address) *uint64 {
+	var nonce *uint64
 	if account, ok := s.accounts[address]; ok {
-		if s.tracer != nil {
-			s.tracer.CaptureStorageReads("nonce", "address", address, "nonce", account.Nonce)
-		}
-		return &account.Nonce
+		nonce = &account.Nonce
 	}
 
-	return nil
+	if s.tracer != nil {
+		s.tracer.CaptureStorageReads("entity", "nonce", "address", address, "nonce", *nonce)
+	}
+
+	return nonce
 }
 
 func (s *SimpleStorage) SetState(address common.Address, key common.Hash, value common.Hash) {
@@ -89,22 +93,24 @@ func (s *SimpleStorage) SetState(address common.Address, key common.Hash, value 
 	}
 
 	if s.tracer != nil {
-		s.tracer.CaptureStorageWrites("state", "address", address, "key", key, "old", s.state[address][key], "new", value)
+		s.tracer.CaptureStorageWrites("entity", "state", "address", address, "key", key, "old", s.state[address][key], "new", value)
 	}
 	s.state[address][key] = value
 }
 
 func (s *SimpleStorage) GetState(address common.Address, key common.Hash) common.Hash {
+	val := common.Hash{}
 	if state, ok := s.state[address]; ok {
 		if value, ok := state[key]; ok {
-			if s.tracer != nil {
-				s.tracer.CaptureStorageReads("state", "address", address, "key", key, "value", value)
-			}
-			return value
+			val = value
 		}
 	}
 
-	return common.Hash{}
+	if s.tracer != nil {
+		s.tracer.CaptureStorageReads("entity", "state", "address", address, "key", key, "value", val)
+	}
+
+	return val
 }
 
 func (s *SimpleStorage) Close() {}

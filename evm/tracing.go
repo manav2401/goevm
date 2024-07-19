@@ -11,6 +11,10 @@ type Tracer struct {
 	stackTrace  StackTrace
 	memoryTrace MemoryTrace
 	opcode      OpCode // current opcode
+
+	accountCreationTrace []interface{}
+	storageReadTrace     []interface{}
+	storageWriteTrace    []interface{}
 }
 
 type StackTrace struct {
@@ -22,7 +26,11 @@ type MemoryTrace struct {
 }
 
 func NewTracer() *Tracer {
-	return &Tracer{}
+	return &Tracer{
+		accountCreationTrace: make([]interface{}, 0),
+		storageReadTrace:     make([]interface{}, 0),
+		storageWriteTrace:    make([]interface{}, 0),
+	}
 }
 
 func (t *Tracer) CaptureTxStart(opts *ExecutionOpts) {
@@ -57,20 +65,34 @@ func (t *Tracer) CaptureOpCodeEnd(scope ScopeContext) {
 	t.stackTrace.stack.Print("### Stack before")
 	scope.stack.Print("### Stack after")
 
-	len := t.memoryTrace.memory.Len()
-	t.memoryTrace.memory.Print("### Memory before", len)
-	scope.memory.Print("### Memory after", len)
+	length := t.memoryTrace.memory.Len()
+	t.memoryTrace.memory.Print("### Memory before", length)
+	scope.memory.Print("### Memory after", length)
+
+	if len(t.accountCreationTrace) > 0 {
+		log.Info("### Account created", t.accountCreationTrace...)
+		t.accountCreationTrace = make([]interface{}, 0)
+	}
+	if len(t.storageReadTrace) > 0 {
+		log.Info("### Storage read", t.storageReadTrace...)
+		t.storageReadTrace = make([]interface{}, 0)
+	}
+	if len(t.storageWriteTrace) > 0 {
+		log.Info("### Storage write", t.storageWriteTrace...)
+		t.storageWriteTrace = make([]interface{}, 0)
+	}
+
 	fmt.Println("")
 }
 
 func (t *Tracer) CaptureAccountCreation(ctx ...interface{}) {
-	log.Info("### Account created", ctx...)
+	t.accountCreationTrace = ctx
 }
 
-func (t *Tracer) CaptureStorageReads(prefix string, ctx ...interface{}) {
-	log.Info(fmt.Sprintf("### Storage read: %s", prefix), ctx...)
+func (t *Tracer) CaptureStorageReads(ctx ...interface{}) {
+	t.storageReadTrace = ctx
 }
 
-func (t *Tracer) CaptureStorageWrites(prefix string, ctx ...interface{}) {
-	log.Info(fmt.Sprintf("### Storage write: %s", prefix), ctx...)
+func (t *Tracer) CaptureStorageWrites(ctx ...interface{}) {
+	t.storageWriteTrace = ctx
 }

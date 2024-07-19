@@ -83,7 +83,7 @@ func (s *RemoteStorage) GetBalance(address common.Address) *uint256.Int {
 		return nil
 	}
 	if s.tracer != nil {
-		s.tracer.CaptureStorageReads("balance", "address", address, "balance", account.Balance.Uint64())
+		s.tracer.CaptureStorageReads("entity", "balance", "address", address, "balance", account.Balance.Uint64())
 	}
 	return account.Balance
 }
@@ -97,7 +97,7 @@ func (s *RemoteStorage) GetNonce(address common.Address) *uint64 {
 		return nil
 	}
 	if s.tracer != nil {
-		s.tracer.CaptureStorageReads("nonce", "address", address, "nonce", account.Nonce)
+		s.tracer.CaptureStorageReads("entity", "nonce", "address", address, "nonce", account.Nonce)
 	}
 	return &account.Nonce
 }
@@ -119,7 +119,7 @@ func (s *RemoteStorage) GetState(address common.Address, key common.Hash) common
 	var value common.Hash
 	value.SetBytes(val)
 	if s.tracer != nil {
-		s.tracer.CaptureStorageReads("state", "address", address, "key", key, "value", value)
+		s.tracer.CaptureStorageReads("entity", "state", "address", address, "key", key, "value", value)
 	}
 	return value
 }
